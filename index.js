@@ -6,9 +6,21 @@ let isGameStarted = false
 let $timeHeader = document.querySelector('#time-header')
 let $resultHeader = document.querySelector('#result-header')
 let $result = document.querySelector('#result')
+let $gameTime = document.querySelector('#game-time')
+let colors = ['red', 'blue', 'yellow', 'black', 'orange', 'green', 'pink', 'brown']
+let randomColorIndex = getRandom(0, colors.length)
+
+function show($el) {
+    $el.classList.remove('hide')
+}
+
+function hide($el) {
+    $el.classList.add('hide')
+
+}
 
 function setGameTime() {
-    let time = 5
+    let time = +$gameTime.value
     $time.textContent = time.toFixed(1)
 
 }
@@ -21,16 +33,6 @@ function getRandom(min, max) {
     return Math.floor(Math.random() * (max - min) + min);
 }
 
-function endGame() {
-    $timeHeader.classList.add('hide')
-    setGameScore()
-    $resultHeader.classList.remove('hide')
-    isGameStarted = false
-    $start.classList.remove('hide')
-    $game.style.backgroundColor = '#ccc'
-    $game.innerHTML = ''
-
-}
 
 function renderBox() {
     $game.innerHTML = ""
@@ -41,7 +43,7 @@ function renderBox() {
     let maxLeft = getSize.width - boxSize
     box.style.height = box.style.width = boxSize + "px"
     box.style.position = 'absolute'
-    box.style.backgroundColor = "#000"
+    box.style.backgroundColor = colors[randomColorIndex]
     box.style.top = getRandom(0, maxTop) + 'px'
     box.style.left = getRandom(0, maxLeft) + 'px'
     box.style.cursor = 'pointer'
@@ -50,10 +52,11 @@ function renderBox() {
 }
 
 function startGame() {
+    $gameTime.setAttribute('disabled', "true")
     score = 0
     setGameTime()
-    $timeHeader.classList.remove('hide')
-    $resultHeader.classList.add('hide')
+    show($timeHeader)
+    hide($resultHeader)
     isGameStarted = true
     let interval = setInterval(function () {
         let time = parseFloat($time.textContent)
@@ -67,8 +70,20 @@ function startGame() {
 
     }, 100)
     $game.style.backgroundColor = '#fff';
-    $start.classList.add('hide')
+    hide($start)
     renderBox()
+
+}
+
+function endGame() {
+    $gameTime.removeAttribute('disabled')
+    hide($timeHeader)
+    setGameScore()
+    show($resultHeader)
+    isGameStarted = false
+    show($start)
+    $game.style.backgroundColor = '#ccc'
+    $game.innerHTML = ''
 
 }
 
@@ -85,5 +100,6 @@ function handleBoxClick(event) {
 
 $start.addEventListener('click', startGame)
 $game.addEventListener('click', handleBoxClick)
+$gameTime.addEventListener('input', setGameTime)
 
 
